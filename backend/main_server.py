@@ -18,6 +18,8 @@ config = AutoConfig.from_pretrained(MODEL)
 model = AutoModelForSequenceClassification.from_pretrained(MODEL)
 #model.save_pretrained(MODEL)
 
+video_info = {}
+
 
 def video_to_text(uuid):
     with sr.AudioFile(f"./videos/{uuid}.wav") as source:
@@ -33,7 +35,7 @@ def video_to_text(uuid):
         return text
 
 def sentimental_anasysis(text):
-    scores = {}
+    scores_total = {}
     tokenizer = AutoTokenizer.from_pretrained(MODEL)
     encoded_input = tokenizer(text, return_tensors='pt')
     output = model(**encoded_input)
@@ -44,7 +46,10 @@ def sentimental_anasysis(text):
     for i in range(scores.shape[0]):
         l = config.id2label[ranking[i]]
         s = scores[ranking[i]]
+        scores_total[l] = str(np.round(float(s), 4))
         print(f"{i+1}) {type(l)} {(np.round(float(s), 4))}")
+        print(scores_total)
+        return scores_total
 
 @app.route("/")
 def index():
@@ -59,11 +64,27 @@ def upload_video():
     file = request.files['audio_data']   
     uuid_generated = str(uuid.uuid4())
     file.save(f"./videos/{uuid_generated}.wav")
-    text = video_to_text(uuid_generated)
-    print(text)
-    print(sentimental_anasysis(text))
-    return {"id":uuid_generated,"text" :text}
+    textz = video_to_text(uuid_generated)
+    video_info[uuid_generated]["text"]=textz
+    print(textz)
+    print(video_info)
+    return {"id":uuid_generated,"text" :textz} #example, {"id":"da013b0d-2252-4d3c-b8bd-2c30afe24d47","text":"I love hot dog"}
+
+@app.route("/analyze",method=["POST"])
+def analyze():
+    uuid = request.form["id"]
+    text = video_info[uuid]["text"]
+    if text == "":
+        return {"error":"no text found"}
+    return sentimental_anasysis(text)
 
 
+
+@app.route("/view/<videoid>",methods=["GET"])
+def view_vid(videoid):
+    #check if file exists
+    if not os.path.isfile(f"./videos/{videoid}.wav"):
+        return {"file":False},404
+    return flask.send_from_directory("./videos",videoid+".wav")
 
 app.run("0.0.0.0",8080)
