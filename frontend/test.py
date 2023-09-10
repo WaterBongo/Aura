@@ -25,9 +25,11 @@ if wav_audio_data is not None:
         
         # Make a POST request to the server with the recorded audio file
         res = requests.post(SERVER_URL, files=files)
-        print(res.json())
+        print(res.json( ))
 
         if res.ok:
             st.success("Audio successfully uploaded to server.")
         else:
             st.error("Error occurred while uploading audio to server.")
+
+        st.text(res.json())
