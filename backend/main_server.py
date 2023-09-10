@@ -61,16 +61,16 @@ def index():
 #endpoint is Upload_video
 @app.route("/upload_video", methods=["POST"])
 def upload_video():
-    file = request.files['audio_data']   
+    file = request.files['audio_data']      
     uuid_generated = str(uuid.uuid4())
     file.save(f"./videos/{uuid_generated}.wav")
     textz = video_to_text(uuid_generated)
-    video_info[uuid_generated]["text"]=textz
     print(textz)
+    print(sentimental_anasysis(textz))
     print(video_info)
     return {"id":uuid_generated,"text" :textz} #example, {"id":"da013b0d-2252-4d3c-b8bd-2c30afe24d47","text":"I love hot dog"}
 
-@app.route("/analyze",method=["POST"])
+@app.route("/analyze",methods=["POST"])
 def analyze():
     uuid = request.form["id"]
     text = video_info[uuid]["text"]
