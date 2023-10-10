@@ -59,9 +59,11 @@ def get_time():
 
     current_time = now.strftime("%H:%M:%S")
     return current_time
+
+
 @app.route("/")
 def index():
-    return "sex"
+    return "potato"
 
 
 
