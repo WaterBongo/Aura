@@ -30,7 +30,7 @@ st.set_page_config(page_title="Aura")
 SERVER_URL = "http://127.0.0.1:8080/upload_video"
 # Define sidebar
 st.sidebar.title("Navigation")
-menu = ["🎥 Recorder", "📚 History", "❓ Help", "🔍 Analysis"]
+menu = ["🎥 Recorder", "📚 History", "📁 Archieve", "🔍 Analysis"]
 choice = st.sidebar.selectbox("Go to", menu)
 
 # Add emojis for each section
@@ -57,18 +57,29 @@ if choice == "🎥 Recorder":
             else:
                 st.error("Error occurred while uploading audio to server.")
 
-            st.text(res.json())
 
-            st.text(ask_gpt(str(res.json())))
+            st.success(ask_gpt(str(res.json())))
             df = pd.DataFrame([[0,0,0],[1,1,1]], columns=("potato","test","3"))
             st.dataframe(df) 
 
 elif choice == "📚 History":
+    col1, col2, col3 = st.columns(3)
+    negative_Data = [0.2, 0.3, 0.1, 0.4, 0.3, 0.2, 0.1, 0.2]
+    neutral_data = [0.5, 0.4, 0.6, 0.3, 0.4, 0.5, 0.6, 0.5]
+    positive_data = [0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3]
+    #find average of all of the data
+    average_negative = np.average(negative_Data)
+    average_neutral = np.average(neutral_data)
+    average_positive = np.average(positive_data)
+    col1.metric("Positivity", f"{average_positive*100}%", "7%")
+    col2.metric("Neutral",f"{average_neutral*100}%", "-10%")
+    col3.metric("Average Negativity", f"{average_negative*100}%", "4%",delta_color="inverse")
+
     data = {
         'time': ['12:00 AM', '3:00 AM', '6:00 AM', '9:00 AM', '12:00 PM', '3:00 PM', '6:00 PM', '9:00 PM'],
-        'negative': [0.2, 0.3, 0.1, 0.4, 0.3, 0.2, 0.1, 0.2],
-        'neutral': [0.5, 0.4, 0.6, 0.3, 0.4, 0.5, 0.6, 0.5],
-        'positive': [0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3]
+        'negative': negative_Data,
+        'neutral': neutral_data,
+        'positive': positive_data
     }
 
     # Create a DataFrame from the data
@@ -78,10 +89,6 @@ elif choice == "📚 History":
     fig = px.line(df, x='time', y=['negative', 'neutral', 'positive'], title='Emotions for the Current Day')
 
     
-
-    import pandas as pd
-    import plotly.express as px
-    import streamlit as st
 
     # Define sample data
     data = {
@@ -118,8 +125,16 @@ elif choice == "📚 History":
     else:
         # Display the chart for weekly view
         st.plotly_chart(fig, use_container_width=True)
-elif choice == "❓ Help":
-    st.title("❓ Help")
+elif choice == "📁 Archieve":
+    st.title("📁 Archieve")
+    st.write("This is a prototype for Aura, a mental health app that uses AI to help you understand your emotions.")
+    r = requests.get("http://127.0.0.1:8080/archieve")
+    rjson = r.json()
+    for vid in rjson['videos']:
+        if st.button(vid):
+            # Do something when the button is pressed
+            print(f"The button for video {vid} was pressed.")
+# Assume that the video button is in the "📁 Archieve" section
 elif choice == "🔍 Analysis":
     st.title("🚧 Section 4")
 else:

@@ -92,6 +92,22 @@ def analyze():
     return sentimental_anasysis(text)
 
 
+@app.route("/archieve")
+def archieve():
+    #get all videos from videos folder, find timestamp of creation
+    #return all videos
+    all_videos = []
+    video_time = []
+    for filename in os.listdir("./videos"):
+        if filename.endswith(".wav"):
+            #get the timestamp of video
+            timestamp = os.path.getmtime(f"./videos/{filename}")
+            local_time = time.ctime(timestamp)
+            all_videos.append(filename)
+            video_time.append(local_time)
+    return {"videos":all_videos,"timestamp":video_time}
+
+
 
 @app.route("/view/<videoid>",methods=["GET"])
 def view_vid(videoid):
