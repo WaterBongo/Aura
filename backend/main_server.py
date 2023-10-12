@@ -108,12 +108,18 @@ def archieve():
     return {"videos":all_videos,"timestamp":video_time}
 
 
+@app.route("/reanalysis",methods=['POST'])
+def reanalysis():
+    uuid = request.form["id"]
+    text = video_to_text(uuid.strip(".wav"))
+    return sentimental_anasysis(text)
+
 
 @app.route("/view/<videoid>",methods=["GET"])
 def view_vid(videoid):
     #check if file exists
-    if not os.path.isfile(f"./videos/{videoid}.wav"):
+    if not os.path.isfile(f"./videos/{videoid}"):
         return {"file":False},404
-    return flask.send_from_directory("./videos",videoid+".wav")
+    return flask.send_from_directory("./videos",videoid)
 
 app.run("0.0.0.0",8080)
