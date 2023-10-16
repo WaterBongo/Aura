@@ -203,4 +203,4 @@ elif choice == "🔍 Analysis":
 
 
 else:
-    st.title("🏠 Home")
+    st.title("🏠 Home") 
