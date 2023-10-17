@@ -1,6 +1,6 @@
 import streamlit as st
 from io import BytesIO
-import requests
+import requests,json
 import streamlit.components.v1 as components
 from st_custom_components import st_audiorec
 from audio_recorder_streamlit import audio_recorder
@@ -14,8 +14,11 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 
-openai.api_key = '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'
-
+#open ai key is in config.json
+with open('./config.json','r') as f:
+    data = f.read()
+    config = json.loads(data)
+    openai.api_key = config['openai_key']
 # Set page title
 
 
