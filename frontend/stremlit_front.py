@@ -135,8 +135,8 @@ elif choice == "📁 Archieve":
     for i in range(len(rjson['videos'])):
         vid = rjson['videos'][i]
         timestamp = rjson['timestamp'][i]
-        nam = f"{vid} {timestamp}"
-        if st.button(nam):
+        vid2 = vid.split("-")[0]
+        if st.button(timestamp+" | ID:  "+vid2):
             # Do something when the button is pressed
             print(f"The button for video {vid} was pressed.")
             r = requests.get(f"http://127.0.0.1:8080/view/{vid}")
@@ -144,7 +144,6 @@ elif choice == "📁 Archieve":
             st.video(r.content)
             #add a close button
             col1, col2, col3 = st.columns([1,1,1])
-
             with col1:
                 if st.button('Close'):
                     st.stop()
